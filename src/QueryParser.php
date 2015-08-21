@@ -75,8 +75,7 @@ class QueryParser {
 
         $this->queryBuilder->where(function ($query) use ($values, $field) {
             foreach ($values as $whereValue) {
-                $quoteValue = DB::connection()->getPdo()->quote($whereValue);
-                $query->orWhere($field, $quoteValue);
+                $query->orWhere($field, $whereValue);
             }
         });
     }
