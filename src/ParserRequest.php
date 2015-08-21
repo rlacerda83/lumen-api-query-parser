@@ -1,10 +1,12 @@
 <?php
 
+namespace QueryParser;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 
-class QueryParser {
+class ParserRequest {
 
     const SORT_IDENTIFIER = 'sort';
     const SORT_DIRECTION_ASC = 'asc';
@@ -37,6 +39,7 @@ class QueryParser {
         $this->request = $request;
         $this->model = $model;
         $this->queryBuilder = DB::table($model->getTable());
+
         $this->setColumnsNames();
     }
 
@@ -105,7 +108,7 @@ class QueryParser {
         }
     }
 
-    private function setColumnsNames()
+    protected function setColumnsNames()
     {
         $connection = DB::connection();
         $this->columnNames = $connection->getSchemaBuilder()->getColumnListing($this->model->getTable());
