@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 
-class ParserRequest {
+class ParserRequest
+{
 
     const SORT_IDENTIFIER = 'sort';
     const SORT_DIRECTION_ASC = 'asc';
@@ -48,7 +49,8 @@ class ParserRequest {
      * @return mixed
      * @throws \Exception
      */
-    public function parser() {
+    public function parser()
+    {
         $data = $this->request->except('page');
 
         foreach ($data as $field => $value) {
@@ -70,7 +72,7 @@ class ParserRequest {
      */
     private function addFilter($field, $value)
     {
-        if(array_search($field, $this->columnNames) === false) {
+        if (array_search($field, $this->columnNames) === false) {
             throw new \Exception("Invalid query! Field {$field} not found");
         }
 
@@ -100,7 +102,7 @@ class ParserRequest {
                 $field = str_replace(self::SORT_DESC_IDENTIFIER, '', $field);
             }
 
-            if(array_search($field, $this->columnNames) === false) {
+            if (array_search($field, $this->columnNames) === false) {
                 throw new \Exception("Invalid query! Field {$field} not found");
             }
 

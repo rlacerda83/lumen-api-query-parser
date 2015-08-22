@@ -4,6 +4,7 @@ namespace QueryParser\Tests;
 
 use Illuminate\Http\Request;
 use PHPUnit_Framework_TestCase;
+use QueryParser\ParserRequest;
 
 class ParserRequestTest extends PHPUnit_Framework_TestCase
 {
@@ -42,15 +43,11 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
 
         $arrayFields = $this->getFields();
 
-        $QueryParser = $this->getMockBuilder('QueryParser\ParserRequest')
-            ->setConstructorArgs(array($request, $this->model))
-            ->setMethods(array('setColumnsNames'))
-            ->getMock();
+        $QueryParser = new ParserRequest($request, $this->model);
 
         $reflection = new \ReflectionClass($QueryParser);
-
         $reflectionProperty = $reflection->getProperty('columnNames');
-        $reflectionProperty->setAccessible( true );
+        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($QueryParser, $arrayFields);
 
         $queryBuilder = $QueryParser->parser();
@@ -62,19 +59,20 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
     public function providerTestParser()
     {
         return array(
-            array(array('sort' => '-id', 'id' => '2'), "select * from `test` where (`id` = ?) order by `id` desc"),
-            array(array('sort' => 'id', 'id' => '2,10'), "select * from `test` where (`id` = ? or `id` = ?) order by `id` asc"),
-            array(array('to' => 'r.lacerda83@gmail.com'), "select * from `test` where (`to` = ?)"),
-            array(array('to' => 'r.lacerda83@gmail.com', 'id' => '5'), "select * from `test` where (`to` = ?) and (`id` = ?)"),
+            [['sort' => '-id', 'id' => '2'], "select * from `test` where (`id` = ?) order by `id` desc"],
+            [['sort' => 'id', 'id' => '2,10'], "select * from `test` where (`id` = ? or `id` = ?) order by `id` asc"],
+            [['to' => 'r.lacerda83@gmail.com'], "select * from `test` where (`to` = ?)"],
+            [['to' => 'r.lacerda83@gmail.com', 'id' => '5'], "select * from `test` where (`to` = ?) and (`id` = ?)"],
         );
     }
 
-    private function getFields() {
-        return array(
+    private function getFields()
+    {
+        return [
             'id' => 'id',
             'to' => 'to',
-            'from' => 'from'
-        );
+            'from' => 'from',
+        ];
     }
 
 }
