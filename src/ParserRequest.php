@@ -5,10 +5,8 @@ namespace QueryParser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-
 class ParserRequest
 {
-
     const SORT_IDENTIFIER = 'sort';
     const SORT_DIRECTION_ASC = 'asc';
     const SORT_DIRECTION_DESC = 'desc';
@@ -43,7 +41,6 @@ class ParserRequest
 
         $this->setColumnsNames();
     }
-
 
     /**
      * @return mixed
@@ -94,10 +91,9 @@ class ParserRequest
         $fields = explode(self::SORT_DELIMITER, $value);
 
         foreach ($fields as $field) {
-
             $direction = self::SORT_DIRECTION_ASC;
 
-            if(substr($field, 0, 1) == self::SORT_DESC_IDENTIFIER) {
+            if (substr($field, 0, 1) == self::SORT_DESC_IDENTIFIER) {
                 $direction = self::SORT_DIRECTION_DESC;
                 $field = str_replace(self::SORT_DESC_IDENTIFIER, '', $field);
             }
@@ -115,5 +111,4 @@ class ParserRequest
         $connection = DB::connection();
         $this->columnNames = $connection->getSchemaBuilder()->getColumnListing($this->model->getTable());
     }
-
 }
