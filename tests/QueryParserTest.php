@@ -8,7 +8,6 @@ use QueryParser\ParserRequest;
 
 class ParserRequestTest extends PHPUnit_Framework_TestCase
 {
-
     protected $model = null;
 
     public function setUp()
@@ -34,11 +33,11 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider providerTestParser
      */
-    function testParser($requestProvider, $expectedResult)
+    public function testParser($requestProvider, $expectedResult)
     {
         $request = new Request();
         foreach ($requestProvider as $key => $value) {
-            $request->merge(array($key => $value));
+            $request->merge([$key => $value]);
         }
 
         $arrayFields = $this->getFields();
@@ -58,12 +57,12 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
 
     public function providerTestParser()
     {
-        return array(
-            [['sort' => '-id', 'id' => '2'], "select * from `test` where (`id` = ?) order by `id` desc"],
-            [['sort' => 'id', 'id' => '2,10'], "select * from `test` where (`id` = ? or `id` = ?) order by `id` asc"],
-            [['to' => 'r.lacerda83@gmail.com'], "select * from `test` where (`to` = ?)"],
-            [['to' => 'r.lacerda83@gmail.com', 'id' => '5'], "select * from `test` where (`to` = ?) and (`id` = ?)"],
-        );
+        return [
+            [['sort' => '-id', 'id' => '2'], 'select * from `test` where (`id` = ?) order by `id` desc'],
+            [['sort' => 'id', 'id' => '2,10'], 'select * from `test` where (`id` = ? or `id` = ?) order by `id` asc'],
+            [['to' => 'r.lacerda83@gmail.com'], 'select * from `test` where (`to` = ?)'],
+            [['to' => 'r.lacerda83@gmail.com', 'id' => '5'], 'select * from `test` where (`to` = ?) and (`id` = ?)'],
+        ];
     }
 
     private function getFields()
@@ -74,5 +73,4 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
             'from' => 'from',
         ];
     }
-
 }
