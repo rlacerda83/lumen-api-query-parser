@@ -28,6 +28,8 @@ class ParserRequest
     protected $columnNames;
 
     protected $queryBuilder;
+    
+    protected $fieldErrors = [];
 
     /**
      * @param Request $request
@@ -58,7 +60,11 @@ class ParserRequest
                 $this->addFilter($field, $value);
             }
         }
-
+        
+        if (!empty($this->fieldErrors)) {
+            throw new QueryParserException($this->fieldErrors);
+        } 
+        
         return $this->queryBuilder;
     }
 
@@ -69,9 +75,7 @@ class ParserRequest
      */
     private function addFilter($field, $value)
     {
-        if (array_search($field, $this->columnNames) === false) {
-            throw new \Exception("Invalid query! Field {$field} not found");
-        }
+        $this->findErrors($field);
 
         $values = explode(self::FILTER_DELIMITER, $value);
 
@@ -98,9 +102,7 @@ class ParserRequest
                 $field = str_replace(self::SORT_DESC_IDENTIFIER, '', $field);
             }
 
-            if (array_search($field, $this->columnNames) === false) {
-                throw new \Exception("Invalid query! Field {$field} not found");
-            }
+            $this->findErrors($field);
 
             $this->queryBuilder->orderBy($field, $direction);
         }
@@ -110,5 +112,12 @@ class ParserRequest
     {
         $connection = DB::connection();
         $this->columnNames = $connection->getSchemaBuilder()->getColumnListing($this->model->getTable());
+    }
+    
+    protected function findErrors($field)
+    {
+        if (array_search($field, $this->columnNames) === false) {
+            array_push($this->fieldErrors, $field);        
+        }
     }
 }
