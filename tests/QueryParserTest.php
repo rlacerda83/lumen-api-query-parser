@@ -54,13 +54,12 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedResult, $result);
     }
-    
-     /**
+
+    /**
      * @param $requestProvider array
      * @param $expectedResult string
      * @dataProvider providerWithErrorsTestParser
      * @expectedException \QueryParser\QueryParserException
-     * 
      */
     public function testParserWithErrors($requestProvider, $expectedResult)
     {
@@ -80,7 +79,6 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
 
         $queryBuilder = $QueryParser->parser();
         $result = $queryBuilder->toSql();
-
     }
 
     public function providerTestParser()
@@ -92,7 +90,7 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
             [['to' => 'r.lacerda83@gmail.com', 'id' => '5'], 'select * from `test` where (`to` = ?) and (`id` = ?)'],
         ];
     }
-    
+
     public function providerWithErrorsTestParser()
     {
         return [
