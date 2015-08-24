@@ -28,7 +28,7 @@ class ParserRequest
     protected $columnNames;
 
     protected $queryBuilder;
-    
+
     protected $fieldErrors = [];
 
     /**
@@ -60,11 +60,11 @@ class ParserRequest
                 $this->addFilter($field, $value);
             }
         }
-        
-        if (!empty($this->fieldErrors)) {
+
+        if (! empty($this->fieldErrors)) {
             throw new QueryParserException($this->fieldErrors);
-        } 
-        
+        }
+
         return $this->queryBuilder;
     }
 
@@ -113,11 +113,11 @@ class ParserRequest
         $connection = DB::connection();
         $this->columnNames = $connection->getSchemaBuilder()->getColumnListing($this->model->getTable());
     }
-    
+
     protected function findErrors($field)
     {
         if (array_search($field, $this->columnNames) === false) {
-            array_push($this->fieldErrors, $field);        
+            array_push($this->fieldErrors, $field);
         }
     }
 }
