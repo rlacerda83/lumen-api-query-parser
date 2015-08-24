@@ -19,15 +19,20 @@ We accept contributions via Pull Requests on [Github](https://github.com/rlacerd
 - **Send coherent history** - Make sure each individual commit in your pull request is meaningful. If you had to make multiple intermediate commits while developing, please squash them before submitting.
 
 ## Running Tests
-See documentation.
+You will need an install of [Composer](https://getcomposer.org) before continuing.
 
-## Branches
-The **master** branch always contains the most up-to-date, production ready release. In most cases, this will be the same as the latest release under the "releases" tab.
+First, install the dependencies:
 
-the **develop** branch holds work in progress for the next release. Any work here should be stable. The idea is that security patches, refactors, and new features are merged into this branch. Once enough patches has been tested here, it will be merged into `master` and released. This branch should always be stable.
+```bash
+$ composer install
+```
 
-**feature-** branches hold in progress work for upcoming features destined for future major or minor releases. These can be unstable.
+Then run phpunit:
 
-Be sure to fetch often so you keep your sources up-to-date!
+```bash
+$ vendor/bin/phpunit
+```
 
-**Happy coding**!
+If the test suite passes on your local machine you should be good to go.
+
+When you make a pull request, the tests will automatically be run again by [Travis CI](https://travis-ci.org/) on multiple php versions.
