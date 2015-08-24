@@ -1,22 +1,27 @@
-# Query string parser for Lumen API 
-Query parser API requests
-
 [![Build Status](https://travis-ci.org/rlacerda83/lumen-api-query-parser.svg?style=flat-square)](https://travis-ci.org/rlacerda83/lumen-api-query-parser)
 [![License](https://img.shields.io/packagist/l/rlacerda83/query-parser.svg?style=flat-square)](https://packagist.org/packages/rlacerda83/query-parser)
 ![Development Version](https://img.shields.io/packagist/vpre/rlacerda83/query-parser.svg?style=flat-square)
 ![Monthly Installs](https://img.shields.io/packagist/dm/rlacerda83/query-parser.svg?style=flat-square)
 [![StyleCI](https://styleci.io/repos/41127669/shield)](https://styleci.io/repos/41127669)
 
-## Testing  
-To test you need to add a .env file in the root directory.
+# Query string parser for Lumen API 
+The Query Parser package is for you that want to implement sorting and filter functions in their API. With Query Parser is simple and intuitive to implement these features.
 
-Below is the .env template:
+## Current Features  
+- Sort
+- Filter
 
-```
-DB_CONNECTION=mysql
-DB_HOST=your_host
-DB_PORT=3306
-DB_DATABASE=your_database
-DB_USERNAME=your_user
-DB_PASSWORD=your_password
-```
+## Upcoming Features
+- Limiting which fields are returned by the API
+- Add standard ElasticSearch filter
+- Manager loading related resource representations
+
+## Documentation
+Please refer to our extensive [Wiki documentation](https://github.com/rlacerda83/lumen-api-query-parser/wiki) for more information.
+
+## Contributing
+Contributions are welcome and will be fully credited. Please see [CONTRIBUTING](contributing.md) for details.
+
+### Security
+If you discover any security related issues, please email r.lacerda83@gmail.com instead of using the issue tracker.
+
