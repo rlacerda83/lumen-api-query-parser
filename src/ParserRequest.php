@@ -7,13 +7,26 @@ use Illuminate\Support\Facades\DB;
 
 class ParserRequest
 {
+    /**
+     * @ self::sort
+     */
     const SORT_IDENTIFIER = 'sort';
     const SORT_DIRECTION_ASC = 'asc';
     const SORT_DIRECTION_DESC = 'desc';
     const SORT_DELIMITER = ',';
     const SORT_DESC_IDENTIFIER = '-';
-
+    
+    /**
+     * @ self::filter
+     */
+    const FILTER_IDENTIFIER = 'filter';
     const FILTER_DELIMITER = ',';
+    
+    /**
+     * @ self::column
+     */
+     const COLUMN_IDENTIFIER = 'column';
+     const COLUMN_DELIMITER = ',';
 
     /**
      * @var Request
@@ -56,6 +69,9 @@ class ParserRequest
             $field = trim($field);
             if ($field == self::SORT_IDENTIFIER) {
                 $this->addSort($value);
+            } else if ($field == self::COLUMN_IDENTIFIER) {
+                $this->addColumn($value);
+                
             } else {
                 $this->addFilter($field, $value);
             }
@@ -64,7 +80,6 @@ class ParserRequest
         if (! empty($this->fieldErrors)) {
             throw new QueryParserException($this->fieldErrors);
         }
-
         return $this->queryBuilder;
     }
 
@@ -75,7 +90,7 @@ class ParserRequest
      */
     private function addFilter($field, $value)
     {
-        $this->findErrors($field);
+        $this->findErrors($field, self::FILTER_IDENTIFIER);
 
         $values = explode(self::FILTER_DELIMITER, $value);
 
@@ -102,10 +117,23 @@ class ParserRequest
                 $field = str_replace(self::SORT_DESC_IDENTIFIER, '', $field);
             }
 
-            $this->findErrors($field);
+            $this->findErrors($field, self::SORT_IDENTIFIER);
 
             $this->queryBuilder->orderBy($field, $direction);
         }
+    }
+    
+    /**
+     * @param $value
+     * @throws \Exception
+     */
+    private function addColumn($value)
+    {
+        $fields = explode(self::COLUMN_DELIMITER, $value);
+        foreach($fields as $field) {
+            $this->findErrors($field, self::COLUMN_IDENTIFIER);   
+        }
+        $this->queryBuilder->select($fields);
     }
 
     protected function setColumnsNames()
@@ -114,10 +142,10 @@ class ParserRequest
         $this->columnNames = $connection->getSchemaBuilder()->getColumnListing($this->model->getTable());
     }
 
-    protected function findErrors($field)
+    protected function findErrors($field, $type)
     {
         if (array_search($field, $this->columnNames) === false) {
-            array_push($this->fieldErrors, $field);
+            $this->fieldErrors[$type][] = $field;
         }
     }
 }

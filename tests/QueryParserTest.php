@@ -35,66 +35,36 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
      */
     public function testParser($requestProvider, $expectedResult)
     {
-        $request = new Request();
-        foreach ($requestProvider as $key => $value) {
-            $request->merge([$key => $value]);
-        }
-
-        $arrayFields = $this->getFields();
-
-        $QueryParser = new ParserRequest($request, $this->model);
-
-        $reflection = new \ReflectionClass($QueryParser);
-        $reflectionProperty = $reflection->getProperty('columnNames');
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($QueryParser, $arrayFields);
-
-        $queryBuilder = $QueryParser->parser();
-        $result = $queryBuilder->toSql();
-
+        $result = $this->manageRequest($requestProvider);
         $this->assertEquals($expectedResult, $result);
     }
 
     /**
      * @param $requestProvider array
-     * @param $expectedResult string
      * @dataProvider providerWithErrorsTestParser
      * @expectedException \QueryParser\QueryParserException
      */
-    public function testParserWithErrors($requestProvider, $expectedResult)
+    public function testParserWithErrors($requestProvider)
     {
-        $request = new Request();
-        foreach ($requestProvider as $key => $value) {
-            $request->merge([$key => $value]);
-        }
-
-        $arrayFields = $this->getFields();
-
-        $QueryParser = new ParserRequest($request, $this->model);
-
-        $reflection = new \ReflectionClass($QueryParser);
-        $reflectionProperty = $reflection->getProperty('columnNames');
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($QueryParser, $arrayFields);
-
-        $queryBuilder = $QueryParser->parser();
-        $result = $queryBuilder->toSql();
+        $result = $this->manageRequest($requestProvider);
     }
 
     public function providerTestParser()
     {
         return [
+            [['column' => 'id,to', 'id' => '5'], 'select `id`, `to` from `test` where (`id` = ?)'],
             [['sort' => '-id', 'id' => '2'], 'select * from `test` where (`id` = ?) order by `id` desc'],
             [['sort' => 'id', 'id' => '2,10'], 'select * from `test` where (`id` = ? or `id` = ?) order by `id` asc'],
             [['to' => 'r.lacerda83@gmail.com'], 'select * from `test` where (`to` = ?)'],
             [['to' => 'r.lacerda83@gmail.com', 'id' => '5'], 'select * from `test` where (`to` = ?) and (`id` = ?)'],
+            
         ];
     }
 
     public function providerWithErrorsTestParser()
     {
         return [
-            [['sort' => '-id', 'idx' => '2'], 'select * from `tester` where (`ids` = ?) order by `ids` desc'],
+            [['column' => 'id' , 'sort' => '-id', 'idx' => '2'], 'select * from `tester` where (`ids` = ?) order by `ids` desc'],
             [['sort' => 'idx', 'id' => '2,10'], 'select * from `teston` where (`id` = ? or `id` = ?) order by `id` asc'],
             [['tor' => 'r.lacerda83@gmail.com'], 'select * from `test` where (`tor` = ?)'],
             [['to' => 'r.lacerda83@gmail.com', 'idx' => '5'], 'select * from `testao` where (`to` = ?) and (`idm` = ?)'],
@@ -108,5 +78,25 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
             'to' => 'to',
             'from' => 'from',
         ];
+    }
+    
+    private function manageRequest($requestProvider)
+    {
+        $request = new Request();
+        foreach ($requestProvider as $key => $value) {
+            $request->merge([$key => $value]);
+        }
+
+        $arrayFields = $this->getFields();
+
+        $QueryParser = new ParserRequest($request, $this->model);
+
+        $reflection = new \ReflectionClass($QueryParser);
+        $reflectionProperty = $reflection->getProperty('columnNames');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($QueryParser, $arrayFields);
+
+        $queryBuilder = $QueryParser->parser();
+        return $queryBuilder->toSql();
     }
 }

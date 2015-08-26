@@ -8,8 +8,20 @@ class QueryParserException extends \LogicException
 
     public function __construct(array $fields, $code = 0, \Exception $previous = null)
     {
-        $message = sprintf('Query parser errors on fields: %s ', implode(', ', $fields));
         $this->fields = $fields;
-        parent::__construct($message, $code, $previous);
+        parent::__construct(
+            $this->returnAllErrors(),
+            $code, 
+            $previous
+        );
+    }
+    
+    public function returnAllErrors()
+    {
+        $message = '';
+        foreach($this->fields as $typeError => $contentArray) {
+            $message .= sprintf('Query parser errors on %s: %s ', $typeError, implode(', ', $contentArray));
+        }
+        return $message;
     }
 }
