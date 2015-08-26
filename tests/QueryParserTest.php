@@ -96,7 +96,7 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
         $reflectionProperty->setValue($QueryParser, $arrayFields);
 
         $queryBuilder = $QueryParser->parser();
-        
+
         return $queryBuilder->toSql();
     }
 }
