@@ -57,7 +57,6 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
             [['sort' => 'id', 'id' => '2,10'], 'select * from `test` where (`id` = ? or `id` = ?) order by `id` asc'],
             [['to' => 'r.lacerda83@gmail.com'], 'select * from `test` where (`to` = ?)'],
             [['to' => 'r.lacerda83@gmail.com', 'id' => '5'], 'select * from `test` where (`to` = ?) and (`id` = ?)'],
-            
         ];
     }
 
@@ -79,7 +78,7 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
             'from' => 'from',
         ];
     }
-    
+
     private function manageRequest($requestProvider)
     {
         $request = new Request();
@@ -97,6 +96,7 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
         $reflectionProperty->setValue($QueryParser, $arrayFields);
 
         $queryBuilder = $QueryParser->parser();
+        
         return $queryBuilder->toSql();
     }
 }
