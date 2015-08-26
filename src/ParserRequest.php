@@ -79,6 +79,7 @@ class ParserRequest
         if (! empty($this->fieldErrors)) {
             throw new QueryParserException($this->fieldErrors);
         }
+
         return $this->queryBuilder;
     }
 
@@ -130,7 +131,7 @@ class ParserRequest
     {
         $fields = explode(self::COLUMN_DELIMITER, $value);
         foreach ($fields as $field) {
-            $this->findErrors($field, self::COLUMN_IDENTIFIER);   
+            $this->findErrors($field, self::COLUMN_IDENTIFIER);
         }
         $this->queryBuilder->select($fields);
     }

@@ -22,6 +22,7 @@ class QueryParserException extends \LogicException
         foreach ($this->fields as $typeError => $contentArray) {
             $message .= sprintf('Query parser errors on %s: %s ', $typeError, implode(', ', $contentArray));
         }
+
         return $message;
     }
 }
