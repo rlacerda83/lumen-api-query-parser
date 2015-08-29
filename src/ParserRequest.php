@@ -52,7 +52,7 @@ class ParserRequest
     {
         $this->request = $request;
         $this->model = $model;
-        $this->queryBuilder = DB::table($model->getTable());
+        $this->queryBuilder = $model->newQuery();
 
         $this->setColumnsNames();
     }
