@@ -23,4 +23,3 @@ class QueryParserException extends \LogicException
         return $this->fields;
     }
 }
-
