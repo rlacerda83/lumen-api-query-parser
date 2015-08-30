@@ -25,7 +25,7 @@ class ParserRequest
     /**
      * @ self::column
      */
-    const COLUMN_IDENTIFIER = 'column';
+    const COLUMN_IDENTIFIER = 'columns';
     const COLUMN_DELIMITER = ',';
 
     /**
