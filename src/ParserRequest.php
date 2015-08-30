@@ -145,7 +145,7 @@ class ParserRequest
     protected function findErrors($field, $type)
     {
         if (array_search($field, $this->columnNames) === false) {
-            $this->fieldErrors[$type][] = $field;
+            $this->fieldErrors[$type][] = 'Field ['.$field.'] not found';
         }
     }
 }

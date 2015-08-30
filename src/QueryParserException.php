@@ -4,25 +4,23 @@ namespace QueryParser;
 
 class QueryParserException extends \LogicException
 {
-    public $fields;
+    protected $fields;
+
+    const MESSAGE = 'Invalid query string params!';
 
     public function __construct(array $fields, $code = 0, \Exception $previous = null)
     {
         $this->fields = $fields;
         parent::__construct(
-            $this->returnAllErrors(),
+            self::MESSAGE,
             $code,
             $previous
         );
     }
 
-    public function returnAllErrors()
+    public function getFields()
     {
-        $message = '';
-        foreach ($this->fields as $typeError => $contentArray) {
-            $message .= sprintf('Query parser errors on %s: %s ', $typeError, implode(', ', $contentArray));
-        }
-
-        return $message;
+        return $this->fields;
     }
 }
+

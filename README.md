@@ -10,9 +10,9 @@ The Query Parser package is for you that want to implement sorting and filter fu
 ## Current Features  
 - Sort
 - Filter
+- Limit which fields are returned by the API
 
 ## Upcoming Features
-- Limiting which fields are returned by the API
 - Add standard ElasticSearch filter
 - Manager loading related resource representations
 
@@ -20,7 +20,7 @@ The Query Parser package is for you that want to implement sorting and filter fu
 Please refer to our extensive [Wiki documentation](https://github.com/rlacerda83/lumen-api-query-parser/wiki) for more information.
 
 ## Contributing
-Contributions are welcome and will be fully credited. Please see [CONTRIBUTING](contributing.md) for details.
+Contributions are welcome and will be fully credited. Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ### Security
 If you discover any security related issues, please email r.lacerda83@gmail.com instead of using the issue tracker.
