@@ -52,21 +52,21 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
     public function providerTestParser()
     {
         return [
-            [['column' => 'id,to', 'id' => '5'], 'select `id`, `to` from `test` where (`id` = ?)'],
-            [['sort' => '-id', 'id' => '2'], 'select * from `test` where (`id` = ?) order by `id` desc'],
-            [['sort' => 'id', 'id' => '2,10'], 'select * from `test` where (`id` = ? or `id` = ?) order by `id` asc'],
-            [['to' => 'r.lacerda83@gmail.com'], 'select * from `test` where (`to` = ?)'],
-            [['to' => 'r.lacerda83@gmail.com', 'id' => '5'], 'select * from `test` where (`to` = ?) and (`id` = ?)'],
+            [['columns' => 'id,to', 'id' => '5'], 'select `test`.`id`, `test`.`to` from `test` where (`test`.`id` = ?)'],
+            [['sort' => '-id', 'id' => '2'], 'select * from `test` where (`test`.`id` = ?) order by `test`.`id` desc'],
+            [['sort' => 'id', 'id' => '2,10'], 'select * from `test` where (`test`.`id` = ? or `test`.`id` = ?) order by `test`.`id` asc'],
+            [['to' => 'r.lacerda83@gmail.com'], 'select * from `test` where (`test`.`to` = ?)'],
+            [['to' => 'r.lacerda83@gmail.com', 'id' => '5'], 'select * from `test` where (`test`.`to` = ?) and (`test`.`id` = ?)'],
         ];
     }
 
     public function providerWithErrorsTestParser()
     {
         return [
-            [['column' => 'id' , 'sort' => '-id', 'idx' => '2'], 'select * from `tester` where (`ids` = ?) order by `ids` desc'],
-            [['sort' => 'idx', 'id' => '2,10'], 'select * from `teston` where (`id` = ? or `id` = ?) order by `id` asc'],
-            [['tor' => 'r.lacerda83@gmail.com'], 'select * from `test` where (`tor` = ?)'],
-            [['to' => 'r.lacerda83@gmail.com', 'idx' => '5'], 'select * from `testao` where (`to` = ?) and (`idm` = ?)'],
+            [['columns' => 'id' , 'sort' => '-id', 'idx' => '2'], 'select * from `tester` where (`test`.`ids` = ?) order by `test`.`ids` desc'],
+            [['sort' => 'idx', 'id' => '2,10'], 'select * from `teston` where (`teston`.`id` = ? or `teston`.`id` = ?) order by `teston`.`id` asc'],
+            [['tor' => 'r.lacerda83@gmail.com'], 'select * from `test` where (`test`.`tor` = ?)'],
+            [['to' => 'r.lacerda83@gmail.com', 'idx' => '5'], 'select * from `testao` where (`testao`.`to` = ?) and (`testao`.`idm` = ?)'],
         ];
     }
 

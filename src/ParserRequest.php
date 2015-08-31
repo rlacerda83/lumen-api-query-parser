@@ -35,6 +35,8 @@ class ParserRequest
 
     protected $model;
 
+    protected $table;
+
     /**
      * @var array
      */
@@ -47,12 +49,14 @@ class ParserRequest
     /**
      * @param Request $request
      * @param $model
+     * @param null $queryBuilder
      */
-    public function __construct(Request $request, $model)
+    public function __construct(Request $request, $model, $queryBuilder = null)
     {
         $this->request = $request;
         $this->model = $model;
-        $this->queryBuilder = DB::table($model->getTable());
+        $this->table = $model->getTable();
+        $this->queryBuilder = $queryBuilder ? $queryBuilder : DB::table($model->getTable());
 
         $this->setColumnsNames();
     }
@@ -66,7 +70,8 @@ class ParserRequest
         $data = $this->request->except('page');
 
         foreach ($data as $field => $value) {
-            $field = trim($field);
+            $field = $this->cleanString($field);
+            $value = $this->cleanString($value);
             if ($field == self::SORT_IDENTIFIER) {
                 $this->addSort($value);
             } elseif ($field == self::COLUMN_IDENTIFIER) {
@@ -91,11 +96,13 @@ class ParserRequest
     private function addFilter($field, $value)
     {
         $this->findErrors($field, self::FILTER_IDENTIFIER);
+        $field = $this->addAliasField($field);
 
         $values = explode(self::FILTER_DELIMITER, $value);
 
         $this->queryBuilder->where(function ($query) use ($values, $field) {
             foreach ($values as $whereValue) {
+                $whereValue = $this->cleanString($whereValue);
                 $query->orWhere($field, $whereValue);
             }
         });
@@ -110,6 +117,7 @@ class ParserRequest
         $fields = explode(self::SORT_DELIMITER, $value);
 
         foreach ($fields as $field) {
+            $field = $this->cleanString($field);
             $direction = self::SORT_DIRECTION_ASC;
 
             if (substr($field, 0, 1) == self::SORT_DESC_IDENTIFIER) {
@@ -119,7 +127,8 @@ class ParserRequest
 
             $this->findErrors($field, self::SORT_IDENTIFIER);
 
-            $this->queryBuilder->orderBy($field, $direction);
+            $fieldAlias = $this->addAliasField($field);
+            $this->queryBuilder->orderBy($fieldAlias, $direction);
         }
     }
 
@@ -130,8 +139,10 @@ class ParserRequest
     private function addColumn($value)
     {
         $fields = explode(self::COLUMN_DELIMITER, $value);
-        foreach ($fields as $field) {
+        foreach ($fields as &$field) {
+            $field = $this->cleanString($field);
             $this->findErrors($field, self::COLUMN_IDENTIFIER);
+            $field = $this->addAliasField($field);
         }
         $this->queryBuilder->select($fields);
     }
@@ -147,5 +158,15 @@ class ParserRequest
         if (array_search($field, $this->columnNames) === false) {
             $this->fieldErrors[$type][] = 'Field ['.$field.'] not found';
         }
+    }
+
+    protected function cleanString($string)
+    {
+        return strtolower(trim($string));
+    }
+
+    protected function addAliasField($field)
+    {
+        return $this->table.'.'.$field;
     }
 }
