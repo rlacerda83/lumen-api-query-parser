@@ -169,5 +169,4 @@ class ParserRequest
     {
         return $this->table.'.'.$field;
     }
-
 }
