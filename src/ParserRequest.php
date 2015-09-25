@@ -59,7 +59,7 @@ class ParserRequest
     public function __construct(Request $request, $model, $queryBuilder = null)
     {
         $this->request = $request;
-        $this->model = !is_object($model) ? new $model : $model;
+        $this->model = ! is_object($model) ? new $model : $model;
 
         $this->connectionDriver = $this->model->getConnectionName() ? $this->model->getConnection()->getDriverName() : self::CONNECTION_DRIVER_UNDEFINED;
         $this->table = $this->model->getTable();
@@ -156,7 +156,7 @@ class ParserRequest
 
     protected function setColumnsNames()
     {
-        switch($this->model->getConnection()->getDriverName()) {
+        switch ($this->model->getConnection()->getDriverName()) {
             case self::CONNECTION_DRIVER_MONGODB:
                 $this->setMongoColumnNames();
                 break;
@@ -164,15 +164,16 @@ class ParserRequest
                 $this->setMysqlColumnNames();
                 break;
         }
-
     }
 
-    protected function setMysqlColumnNames() {
+    protected function setMysqlColumnNames()
+    {
         $connection = DB::connection();
         $this->columnNames = $connection->getSchemaBuilder()->getColumnListing($this->model->getTable());
     }
 
-    protected function setMongoColumnNames() {
+    protected function setMongoColumnNames()
+    {
         $result = DB::collection($this->table)->first();
         $arrayFields = [];
         foreach ($result as $key => $value) {
@@ -201,7 +202,10 @@ class ParserRequest
 
     protected function addAliasField($field)
     {
-        if ($this->connectionDriver == 'mongodb') return $field;
+        if ($this->connectionDriver == 'mongodb') {
+            return $field;
+        }
+
         return $this->table.'.'.$field;
     }
 }
