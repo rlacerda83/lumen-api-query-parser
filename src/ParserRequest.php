@@ -28,6 +28,9 @@ class ParserRequest
     const COLUMN_IDENTIFIER = 'columns';
     const COLUMN_DELIMITER = ',';
 
+    const CONNECTION_DRIVER_MONGODB = 'mongodb';
+    const CONNECTION_DRIVER_UNDEFINED = 'undefined';
+
     /**
      * @var Request
      */
@@ -36,6 +39,8 @@ class ParserRequest
     protected $model;
 
     protected $table;
+
+    protected $connectionDriver;
 
     /**
      * @var array
@@ -54,10 +59,12 @@ class ParserRequest
     public function __construct(Request $request, $model, $queryBuilder = null)
     {
         $this->request = $request;
-        $this->model = $model;
-        $this->table = $model->getTable();
-        $this->queryBuilder = $queryBuilder ? $queryBuilder : DB::table($model->getTable());
+        $this->model = !is_object($model) ? new $model : $model;
 
+        $this->connectionDriver = $this->model->getConnectionName() ? $this->model->getConnection()->getDriverName() : self::CONNECTION_DRIVER_UNDEFINED;
+        $this->table = $this->model->getTable();
+
+        $this->queryBuilder = $queryBuilder ? $queryBuilder : DB::table($this->table);
         $this->setColumnsNames();
     }
 
@@ -70,8 +77,8 @@ class ParserRequest
         $data = $this->request->except('page');
 
         foreach ($data as $field => $value) {
-            $field = $this->cleanString($field);
-            $value = $this->cleanString($value);
+            $field = $this->cleanField($field);
+            $value = $this->cleanValue($value);
             if ($field == self::SORT_IDENTIFIER) {
                 $this->addSort($value);
             } elseif ($field == self::COLUMN_IDENTIFIER) {
@@ -102,7 +109,7 @@ class ParserRequest
 
         $this->queryBuilder->where(function ($query) use ($values, $field) {
             foreach ($values as $whereValue) {
-                $whereValue = $this->cleanString($whereValue);
+                $whereValue = $this->cleanValue($whereValue);
                 $query->orWhere($field, $whereValue);
             }
         });
@@ -117,7 +124,7 @@ class ParserRequest
         $fields = explode(self::SORT_DELIMITER, $value);
 
         foreach ($fields as $field) {
-            $field = $this->cleanString($field);
+            $field = $this->cleanField($field);
             $direction = self::SORT_DIRECTION_ASC;
 
             if (substr($field, 0, 1) == self::SORT_DESC_IDENTIFIER) {
@@ -140,7 +147,7 @@ class ParserRequest
     {
         $fields = explode(self::COLUMN_DELIMITER, $value);
         foreach ($fields as &$field) {
-            $field = $this->cleanString($field);
+            $field = $this->cleanField($field);
             $this->findErrors($field, self::COLUMN_IDENTIFIER);
             $field = $this->addAliasField($field);
         }
@@ -149,8 +156,30 @@ class ParserRequest
 
     protected function setColumnsNames()
     {
+        switch($this->model->getConnection()->getDriverName()) {
+            case self::CONNECTION_DRIVER_MONGODB:
+                $this->setMongoColumnNames();
+                break;
+            default:
+                $this->setMysqlColumnNames();
+                break;
+        }
+
+    }
+
+    protected function setMysqlColumnNames() {
         $connection = DB::connection();
         $this->columnNames = $connection->getSchemaBuilder()->getColumnListing($this->model->getTable());
+    }
+
+    protected function setMongoColumnNames() {
+        $result = DB::collection($this->table)->first();
+        $arrayFields = [];
+        foreach ($result as $key => $value) {
+            $arrayFields[] = $key;
+        }
+
+        $this->columnNames = $arrayFields;
     }
 
     protected function findErrors($field, $type)
@@ -160,13 +189,19 @@ class ParserRequest
         }
     }
 
-    protected function cleanString($string)
+    protected function cleanValue($string)
+    {
+        return trim($string);
+    }
+
+    protected function cleanField($string)
     {
         return strtolower(trim($string));
     }
 
     protected function addAliasField($field)
     {
+        if ($this->connectionDriver == 'mongodb') return $field;
         return $this->table.'.'.$field;
     }
 }

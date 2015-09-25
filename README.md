@@ -8,9 +8,12 @@
 The Query Parser package is for you that want to implement sorting and filter functions in their API. With Query Parser is simple and intuitive to implement these features.
 
 ## Current Features  
+- Support Mysql and MongoDB
 - Sort
 - Filter
 - Limit which fields are returned by the API
+
+Support mongoDB using [https://github.com/jenssegers/laravel-mongodb](https://github.com/jenssegers/laravel-mongodb) package.
 
 ## Upcoming Features
 - Add standard ElasticSearch filter

@@ -20,7 +20,7 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
 
         $app->withFacades();
 
-        $this->model = new BaseModel();
+        $this->model = 'QueryParser\Tests\BaseModel';
     }
 
     public function tearDown()
@@ -46,7 +46,7 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
      */
     public function testParserWithErrors($requestProvider)
     {
-        $result = $this->manageRequest($requestProvider);
+        $this->manageRequest($requestProvider);
     }
 
     public function providerTestParser()
