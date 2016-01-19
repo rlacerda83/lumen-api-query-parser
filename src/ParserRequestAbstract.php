@@ -5,7 +5,7 @@ namespace QueryParser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ParserRequest
+abstract class ParserRequestAbstract
 {
     /**
      * @ self::sort
@@ -28,9 +28,6 @@ class ParserRequest
     const COLUMN_IDENTIFIER = 'columns';
     const COLUMN_DELIMITER = ',';
 
-    const CONNECTION_DRIVER_MONGODB = 'mongodb';
-    const CONNECTION_DRIVER_UNDEFINED = 'undefined';
-
     /**
      * @var Request
      */
@@ -39,8 +36,6 @@ class ParserRequest
     protected $model;
 
     protected $table;
-
-    protected $connectionDriver;
 
     /**
      * @var array
@@ -59,9 +54,8 @@ class ParserRequest
     public function __construct(Request $request, $model, $queryBuilder = null)
     {
         $this->request = $request;
-        $this->model = ! is_object($model) ? new $model : $model;
+        $this->model = $model;
 
-        $this->connectionDriver = $this->model->getConnectionName() ? $this->model->getConnection()->getDriverName() : self::CONNECTION_DRIVER_UNDEFINED;
         $this->table = $this->model->getTable();
 
         $this->queryBuilder = $queryBuilder ? $queryBuilder : DB::table($this->table);
@@ -79,13 +73,19 @@ class ParserRequest
         foreach ($data as $field => $value) {
             $field = $this->cleanField($field);
             $value = $this->cleanValue($value);
+
             if ($field == self::SORT_IDENTIFIER) {
                 $this->addSort($value);
-            } elseif ($field == self::COLUMN_IDENTIFIER) {
-                $this->addColumn($value);
-            } else {
-                $this->addFilter($field, $value);
+                continue;
             }
+
+            if ($field == self::COLUMN_IDENTIFIER) {
+                $this->addColumn($value);
+                continue;
+            }
+
+            $this->addFilter($field, $value);
+
         }
 
         if (! empty($this->fieldErrors)) {
@@ -154,35 +154,6 @@ class ParserRequest
         $this->queryBuilder->select($fields);
     }
 
-    protected function setColumnsNames()
-    {
-        switch ($this->model->getConnection()->getDriverName()) {
-            case self::CONNECTION_DRIVER_MONGODB:
-                $this->setMongoColumnNames();
-                break;
-            default:
-                $this->setMysqlColumnNames();
-                break;
-        }
-    }
-
-    protected function setMysqlColumnNames()
-    {
-        $connection = DB::connection();
-        $this->columnNames = $connection->getSchemaBuilder()->getColumnListing($this->model->getTable());
-    }
-
-    protected function setMongoColumnNames()
-    {
-        $result = DB::collection($this->table)->first();
-        $arrayFields = [];
-        foreach ($result as $key => $value) {
-            $arrayFields[] = $key;
-        }
-
-        $this->columnNames = $arrayFields;
-    }
-
     protected function findErrors($field, $type)
     {
         if (array_search($field, $this->columnNames) === false) {
@@ -200,12 +171,7 @@ class ParserRequest
         return strtolower(trim($string));
     }
 
-    protected function addAliasField($field)
-    {
-        if ($this->connectionDriver == 'mongodb') {
-            return $field;
-        }
+    abstract protected function addAliasField($field);
 
-        return $this->table.'.'.$field;
-    }
+    abstract protected function setColumnsNames();
 }

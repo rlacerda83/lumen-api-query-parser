@@ -5,6 +5,7 @@ namespace QueryParser\Tests;
 use Illuminate\Http\Request;
 use PHPUnit_Framework_TestCase;
 use QueryParser\ParserRequest;
+use QueryParser\ParserRequestFactory;
 
 class ParserRequestTest extends PHPUnit_Framework_TestCase
 {
@@ -88,7 +89,7 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
 
         $arrayFields = $this->getFields();
 
-        $QueryParser = new ParserRequest($request, $this->model);
+        $QueryParser = ParserRequestFactory::createParser($request, $this->model);
 
         $reflection = new \ReflectionClass($QueryParser);
         $reflectionProperty = $reflection->getProperty('columnNames');
