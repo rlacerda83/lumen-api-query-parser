@@ -74,9 +74,11 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
     private function getFields()
     {
         return [
-            'id' => 'id',
-            'to' => 'to',
-            'from' => 'from',
+            'test' => [
+                'id' => 'id',
+                'to' => 'to',
+                'from' => 'from',
+            ]   
         ];
     }
 
