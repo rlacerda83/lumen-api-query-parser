@@ -10,13 +10,13 @@ class MongoParser extends ParserRequestAbstract
 
     protected function setColumnsNames()
     {
-        $result = DB::collection($this->table)->first();
+        $result = DB::collection($this->tables[0])->first();
         $arrayFields = [];
         foreach ($result as $key => $value) {
             $arrayFields[] = $key;
         }
 
-        $this->columnNames = $arrayFields;
+        $this->columnNames[$this->tables[0]] = $arrayFields;
     }
 
     /**

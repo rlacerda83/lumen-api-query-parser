@@ -14,13 +14,20 @@ class MySqlParser extends ParserRequestAbstract
      */
     protected function addAliasField($field)
     {
-        return $this->table.'.'.$field;
+        if (strpos($field, self::TABLE_DELIMITER) == 0) {
+            return $this->tables[0].'.'.$field;
+        }
+
+        return str_replace(self::TABLE_DELIMITER, '.', $field);
     }
 
     protected function setColumnsNames()
     {
         $connection = DB::connection();
-        $this->columnNames = $connection->getSchemaBuilder()->getColumnListing($this->model->getTable());
+        foreach ($this->tables as $table) {
+            $this->columnNames[$table] = $connection->getSchemaBuilder()->getColumnListing($table);
+        }
+
     }
 
 }
