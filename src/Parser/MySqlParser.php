@@ -7,7 +7,6 @@ use DB;
 
 class MySqlParser extends ParserRequestAbstract
 {
-
     /**
      * @param $field
      * @return string
@@ -27,7 +26,5 @@ class MySqlParser extends ParserRequestAbstract
         foreach ($this->tables as $table) {
             $this->columnNames[$table] = $connection->getSchemaBuilder()->getColumnListing($table);
         }
-
     }
-
 }

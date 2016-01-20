@@ -4,10 +4,9 @@ namespace QueryParser\Tests;
 
 use Illuminate\Http\Request;
 use PHPUnit_Framework_TestCase;
-use QueryParser\ParserRequest;
 use QueryParser\ParserRequestFactory;
 
-class ParserRequestTest extends PHPUnit_Framework_TestCase
+class QueryParserTest extends PHPUnit_Framework_TestCase
 {
     protected $model = null;
 
@@ -64,7 +63,7 @@ class ParserRequestTest extends PHPUnit_Framework_TestCase
     public function providerWithErrorsTestParser()
     {
         return [
-            [['columns' => 'id' , 'sort' => '-id', 'idx' => '2'], 'select * from `tester` where (`test`.`ids` = ?) order by `test`.`ids` desc'],
+            [['columns' => 'id', 'sort' => '-id', 'idx' => '2'], 'select * from `tester` where (`test`.`ids` = ?) order by `test`.`ids` desc'],
             [['sort' => 'idx', 'id' => '2,10'], 'select * from `teston` where (`teston`.`id` = ? or `teston`.`id` = ?) order by `teston`.`id` asc'],
             [['tor' => 'r.lacerda83@gmail.com'], 'select * from `test` where (`test`.`tor` = ?)'],
             [['to' => 'r.lacerda83@gmail.com', 'idx' => '5'], 'select * from `testao` where (`testao`.`to` = ?) and (`testao`.`idm` = ?)'],

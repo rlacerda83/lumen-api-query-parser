@@ -2,14 +2,12 @@
 
 namespace QueryParser;
 
-
 use Illuminate\Http\Request;
 use QueryParser\Parser\MongoParser;
 use QueryParser\Parser\MySqlParser;
 
 class ParserRequestFactory
 {
-
     const CONNECTION_DRIVER_MONGODB = 'mongodb';
     const CONNECTION_DRIVER_UNDEFINED = 'undefined';
     const CONNECTION_DRIVER_MYSQL = 'mysql';
@@ -31,5 +29,4 @@ class ParserRequestFactory
             return new MongoParser($request, $model, $queryBuilder);
         }
     }
-
 }
