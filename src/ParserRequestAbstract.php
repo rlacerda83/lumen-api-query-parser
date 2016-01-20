@@ -163,8 +163,9 @@ abstract class ParserRequestAbstract
         $table = $explodedField[0];
         $shortField = $explodedField[1];
 
-        if (!isset($this->columnNames[$table])) {
+        if (! isset($this->columnNames[$table])) {
             $this->fieldErrors[$type][] = 'Field ['.$field.'] not allowed for search';
+
             return;
         }
 
