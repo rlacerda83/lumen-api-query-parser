@@ -7,7 +7,7 @@ use DB;
 
 class MongoParser extends ParserRequestAbstract
 {
-
+    
     protected function setColumnsNames()
     {
         $result = DB::collection($this->tables[0])->first();
@@ -20,3 +20,4 @@ class MongoParser extends ParserRequestAbstract
     }
 
 }
+

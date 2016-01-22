@@ -15,5 +15,5 @@ class MySqlParser extends ParserRequestAbstract
             $this->columnNames[$table] = $connection->getSchemaBuilder()->getColumnListing($table);
         }
     }
-
+    
 }
