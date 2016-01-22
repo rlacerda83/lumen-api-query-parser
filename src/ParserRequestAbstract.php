@@ -28,8 +28,6 @@ abstract class ParserRequestAbstract
     const COLUMN_IDENTIFIER = 'columns';
     const COLUMN_DELIMITER = ',';
 
-    const TABLE_DELIMITER = '|';
-
     /**
      * @var Request
      */
@@ -75,7 +73,7 @@ abstract class ParserRequestAbstract
     {
         $data = $this->request->except('page');
         foreach ($data as $field => $value) {
-            $field = $this->cleanField($field);
+            $this->cleanField($field);
             $value = $this->cleanValue($value);
 
             if ($field == self::SORT_IDENTIFIER) {
@@ -105,17 +103,11 @@ abstract class ParserRequestAbstract
      */
     private function addFilter($field, $value)
     {
-        $field = $this->addAliasField($field);
-        $this->findErrors($field, self::FILTER_IDENTIFIER);
+        $filter = $this->parseFilter($field);
+        $this->findErrors($filter->getField(), self::FILTER_IDENTIFIER);
 
         $values = explode(self::FILTER_DELIMITER, $value);
-
-        $this->queryBuilder->where(function ($query) use ($values, $field) {
-            foreach ($values as $whereValue) {
-                $whereValue = $this->cleanValue($whereValue);
-                $query->orWhere($field, $whereValue);
-            }
-        });
+        $filter->applyFilter($this->queryBuilder, $values);
     }
 
     /**
@@ -127,18 +119,20 @@ abstract class ParserRequestAbstract
         $fields = explode(self::SORT_DELIMITER, $value);
 
         foreach ($fields as $field) {
-            $field = $this->cleanField($field);
+            $filter = $this->parseFilter($field);
+            $extractField = $filter->getField();
+
+            $this->cleanField($extractField);
             $direction = self::SORT_DIRECTION_ASC;
 
-            if (substr($field, 0, 1) == self::SORT_DESC_IDENTIFIER) {
+            if (strpos($extractField, self::SORT_DESC_IDENTIFIER) > 0) {
                 $direction = self::SORT_DIRECTION_DESC;
-                $field = str_replace(self::SORT_DESC_IDENTIFIER, '', $field);
+                $extractField = str_replace(self::SORT_DESC_IDENTIFIER, '', $extractField);
             }
 
-            $fieldAlias = $this->addAliasField($field);
-            $this->findErrors($fieldAlias, self::SORT_IDENTIFIER);
+            $this->findErrors($extractField, self::SORT_IDENTIFIER);
 
-            $this->queryBuilder->orderBy($fieldAlias, $direction);
+            $this->queryBuilder->orderBy($extractField, $direction);
         }
     }
 
@@ -150,8 +144,9 @@ abstract class ParserRequestAbstract
     {
         $fields = explode(self::COLUMN_DELIMITER, $value);
         foreach ($fields as &$field) {
-            $field = $this->cleanField($field);
-            $field = $this->addAliasField($field);
+            $this->cleanField($field);
+            $field = $this->parseFilter($field)->getField();
+
             $this->findErrors($field, self::COLUMN_IDENTIFIER);
         }
         $this->queryBuilder->select($fields);
@@ -178,9 +173,9 @@ abstract class ParserRequestAbstract
         return trim($string);
     }
 
-    protected function cleanField($string)
+    protected function cleanField(&$string)
     {
-        return strtolower(trim($string));
+        $string = strtolower(trim($string));
     }
 
     public function addTables(array $tables)
@@ -189,7 +184,10 @@ abstract class ParserRequestAbstract
         $this->setColumnsNames();
     }
 
-    abstract protected function addAliasField($field);
+    private function parseFilter($field)
+    {
+        return new Filter($field, $this->tables);
+    }
 
     abstract protected function setColumnsNames();
 }

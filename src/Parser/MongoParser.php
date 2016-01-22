@@ -19,13 +19,4 @@ class MongoParser extends ParserRequestAbstract
         $this->columnNames[$this->tables[0]] = $arrayFields;
     }
 
-    /**
-     * @param $field
-     * @return mixed
-     */
-    protected function addAliasField($field)
-    {
-        return $field;
-    }
-
 }
