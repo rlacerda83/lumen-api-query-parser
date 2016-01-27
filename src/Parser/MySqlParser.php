@@ -7,7 +7,6 @@ use DB;
 
 class MySqlParser extends ParserRequestAbstract
 {
-
     protected function setColumnsNames()
     {
         $connection = DB::connection();
@@ -15,5 +14,4 @@ class MySqlParser extends ParserRequestAbstract
             $this->columnNames[$table] = $connection->getSchemaBuilder()->getColumnListing($table);
         }
     }
-    
 }
