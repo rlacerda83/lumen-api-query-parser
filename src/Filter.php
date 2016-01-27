@@ -38,9 +38,8 @@ class Filter
         'lte' => '<=',
         'like' => 'Like',
         'notin' => 'NotIn',
-        'in' =>'In'
+        'in' => 'In',
     ];
-
 
     /**
      * Filter constructor.
@@ -63,6 +62,7 @@ class Filter
         if (strpos($field, self::TABLE_DELIMITER) == 0) {
             $field = $this->tables[0].'.'.$field;
             $this->removeOperator($field);
+
             return true;
         }
 
@@ -78,6 +78,7 @@ class Filter
     {
         if (strpos($field, self::START_OPERATOR_DELIMITER) == 0) {
             $this->field = $field;
+
             return true;
         }
 
@@ -91,17 +92,18 @@ class Filter
      */
     private function extractOperator($rawField)
     {
-        preg_match("/{(.*?)}/", $rawField, $match);
+        preg_match('/{(.*?)}/', $rawField, $match);
 
-        if (!count($match)) {
+        if (! count($match)) {
             $this->operator = self::DEFAULT_OPERATOR;
+
             return true;
         }
 
         $operator = strtolower($match[1]);
 
-        if (!isset(self::$allowedOperators[$match[1]])) {
-            throw new \Exception('Operator ' . $operator . ' not allowed');
+        if (! isset(self::$allowedOperators[$match[1]])) {
+            throw new \Exception('Operator '.$operator.' not allowed');
         }
 
         $this->operator = self::$allowedOperators[$match[1]];
@@ -183,8 +185,7 @@ class Filter
      */
     private function applyInFilter($queryBuilder, $values)
     {
-        $operator = 'where' . $this->getOperator();
+        $operator = 'where'.$this->getOperator();
         $queryBuilder->$operator($this->getField(), $values);
     }
-
 }
